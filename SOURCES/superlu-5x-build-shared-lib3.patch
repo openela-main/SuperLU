@@ -1,0 +1,39 @@
+--- SuperLU_5.1.1/SRC/Makefile.orig	2016-03-26 08:47:18.885503561 -0400
++++ SuperLU_5.1.1/SRC/Makefile	2016-03-26 08:52:10.512497969 -0400
+@@ -98,7 +98,7 @@
+ 	ilu_zcolumn_dfs.o ilu_zpanel_dfs.o ilu_zcopy_to_ucol.o \
+ 	ilu_zpivotL.o zdiagonal.o zlacon2.o dzsum1.o izmax1.o
+ 
+-all:    single double complex complex16
++all:    sharedlib
+ 
+ single: $(SLUSRC) $(ALLAUX) $(SCAUX)
+ 	$(ARCH) $(ARCHFLAGS) $(SUPERLULIB) $(SLUSRC) $(ALLAUX) $(SCAUX)
+@@ -116,17 +116,23 @@
+ 	$(ARCH) $(ARCHFLAGS) $(SUPERLULIB) $(ZLUSRC) $(ALLAUX) $(DZLAUX)
+ 	$(RANLIB) $(SUPERLULIB)
+ 
++sharedlib: $(ALLAUX) $(LAAUX) $(SLASRC) $(DLASRC) $(CLASRC) $(ZLASRC) $(SCLAUX) $(DZLAUX) $(SLUSRC) $(DLUSRC) $(CLUSRC) $(ZLUSRC) 
++		$(CC) $(CFLAGS) $(LIBS) -shared -Wl,-soname,libsuperlu.so.5.1 -o libsuperlu.so.5.1 \
++		$(ALLAUX) $(LAAUX) $(SLASRC) $(DLASRC) $(CLASRC) $(ZLASRC) $(SCLAUX) \
++		$(DZLAUX) $(SLUSRC) $(DLUSRC) $(CLUSRC) $(ZLUSRC)
++	ln -sf libsuperlu.so.5.1 libsuperlu.so
++
+ 
+ ##################################
+ # Do not optimize these routines #
+ ##################################
+-smach.o: smach.c ; $(CC) -c $(NOOPTS) $(CDEFS) $<
+-dmach.o: dmach.c ; $(CC) -c $(NOOPTS) $(CDEFS) $<
+-superlu_timer.o:  superlu_timer.c ; $(CC) -c $(NOOPTS) $<
++slamch.o: slamch.c ; $(CC) $(FPIC) $(LIBS) -c $(NOOPTS) $(CDEFS) $<
++dlamch.o: dlamch.c ; $(CC) $(FPIC) $(LIBS) -c $(NOOPTS) $(CDEFS) $<
++superlu_timer.o:  superlu_timer.c ; $(CC) $(FPIC) $(LIBS) -c $(NOOPTS) $<
+ ##################################
+ 
+ .c.o:
+-	$(CC) $(CFLAGS) $(CDEFS) $(BLASDEF) -c $< $(VERBOSE)
++	$(CC) $(CFLAGS) $(CDEFS) $(BLASDEF) $(LIBS) -c $< $(VERBOSE)
+ 
+ .f.o:
+ 	$(FORTRAN) $(FFLAGS) -c $<
