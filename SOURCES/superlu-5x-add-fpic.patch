@@ -1,0 +1,12 @@
+--- SuperLU_5.1.1/MAKE_INC/make.linux.orig	2016-03-26 08:43:03.038994570 -0400
++++ SuperLU_5.1.1/MAKE_INC/make.linux	2016-03-26 08:44:09.141092611 -0400
+@@ -46,7 +46,8 @@
+ RANLIB       = ranlib
+ 
+ CC           = gcc
+-CFLAGS       = -O3 -g
++FPIC	     = -fPIC
++CFLAGS       = -O3 $(FPIC)
+ NOOPTS       = 
+ FORTRAN	     = gfortran #g77
+ FFLAGS       = -O2 -g -fopenmp
